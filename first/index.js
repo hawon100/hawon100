@@ -1,130 +1,236 @@
-// canvas 요소 가져오기
-const canvas = document.querySelector("canvas");
+// 공격 추가
+// 체력 추가 -> html로 이동
 
-// canvas에서 2D context 가져오기
+const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
-// canvas의 너비와 높이 설정
-canvas.width = 1024; 
-canvas.height = 576; 
+canvas.width = 1024;
+canvas.height = 576;
 
 const gravity = 0.2;
 
-// Canvas 전체를 채울 검은색 사각형 그리기
+const background = new Sprite({
+    position: {
+        x: 0,
+        y: 0,
+    },
+    imageSrc: "/first/img/background.png",
+})
+
 c.fillRect(0, 0, canvas.width, canvas.height);
+// 시작점과 끝점
 
-// Sprite 클래스 정의
-class Sprite {
-    constructor( { position, velocity }) {
-        // 위치와 속도 설정
-        this.position = position;
-        this.velocity = velocity;
 
-        // 스프라이트의 너비와 높이 설정
-        this.width = 30;
-        this.height = 150;
-    }
 
-    // 스프라이트 그리기
-    draw() {
-        // 빨간색으로 스프라이트 그리기
-        c.fillStyle = "red";
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
-    }
-
-    // 스프라이트 업데이트
-    update() {
-        // 스프라이트 그리기
-        this.draw();
-
-        // 스프라이트의 위치를 아래로 이동시킴
-        this.position.y += this.velocity.y;
-
-        this.position.x += this.velocity.x;
-
-        if(this.position.y + this.height + this.velocity.y >= canvas.height)
-        {
-            this.velocity.y = 0;
-        }
-        else 
-        {
-            this.velocity.y += gravity;
-        }
-    }
-}
-
-// 플레이어 스프라이트 생성
-const player = new Sprite( {
-    // 초기 위치 설정
+// 플레이어 선언
+const player = new Fighter({
     position: {
-        x :0,
-        y :0,
+        x: 0,
+        y: 0,
     },
-    // 초기 속도 설정
     velocity: {
-        x:0,
-        y:10,
-    }
+        x: 0,
+        y: 10,
+    },
+    offset: {
+        x: 0,
+        y: 0,
+    },
 });
 
-// 적 스프라이트 생성
-const enemy = new Sprite( {
-    // 초기 위치 설정
+// 적 선언
+const enemy = new Fighter({
     position: {
-        x :400,
-        y :100,
+        x: 400,
+        y: 100,
     },
-    // 초기 속도 설정
     velocity: {
-        x:0,
-        y:10,
-    }
+        x: 0,
+        y: 0,
+    },
+    color: "blue",
+    offset: {
+        x: -50,
+        y: 0,
+    },
 });
 
-// 콘솔에 플레이어 객체 출력
+// 콘솔을 열어 player의 위치 확인 가능
 console.log(player);
 
+// 중복 키 입력시 발생하는 문제 수정
 const keys = {
+    a: {
+        pressed: false,
+    },
     d: {
-        pressed : false,
-    }
-}
+        pressed: false,
+    },
+    // 작성하고 애니메이트 안으로 이동
 
-// 애니메이션 함수 정의
+    w: {
+        pressed: false,
+    },
+
+    // 적 방향키 lastKey
+    ArrowRight: {
+        pressed: false,
+    },
+    ArrowLeft: {
+        pressed: false,
+    },
+    ArrowUp: {
+        pressed: false,
+    },
+};
+
+
+
+decreaseTimer();
+
+// 재귀함수?
+// 애니메이트 선언
 function animate() {
-    // 다음 프레임 요청
     window.requestAnimationFrame(animate);
+    // console.log("go");
+    // 계속 부르는 것을 확인하기 위한 로그, 확인 후 없앤다.
 
-    // Canvas를 검은색으로 채움
+    // 캔버스 새로 그리기
     c.fillStyle = "black";
     c.fillRect(0, 0, canvas.width, canvas.height);
+    // c.clearRect 와 비교해보는 것도 좋음
+    // 캔버스 크기 설정
+    // 캔버스 새로 그리는게 위에 있는 이유, 새로 그리고 이미지를 업데이트해야 보임. 안그러면 아무것도 안보임
 
-    // 플레이어와 적 스프라이트 업데이트
+    background.update();
     player.update();
     enemy.update();
+    // 실행 후 확인하면 아래로 쭉 그어지는 것을 볼 수 있다.
+    // 개별 개체이므로 캔버스를 계속 비워야 한다.
 
+    // 아무것도 입력하지 않았을 경우, 좌우로 움직이지 않음.
     player.velocity.x = 0;
+
+    enemy.velocity.x = 0;
+
+    // 이렇게 바꿔도 약간의 문제 발생, d를 누른 상태로 a를 누르면 왼쪽으로 가지만, a를 누른 상태로 d를 누르면 그대로임
+    // 그래서 가장 마지막에 입력한 last key를 설정함
+
+    // 개량한 if문
+    if (keys.a.pressed && player.lastKey === "a") {
+        player.velocity.x = -2;
+    } else if (keys.d.pressed && player.lastKey === "d") {
+        player.velocity.x = 2;
+    }
+    // lastKey를 player.lastKey로 변경
+    // this.lastKey를 추가했기 때문에 추가한 let lastKey는 삭제해도 된다.
+
+    // 적의 방향키 lastKey를 추가
+    if (keys.ArrowLeft.pressed && enemy.lastKey === "ArrowLeft") {
+        enemy.velocity.x = -2;
+    } else if (keys.ArrowRight.pressed && enemy.lastKey === "ArrowRight") {
+        enemy.velocity.x = 2;
+    }
+
+    if (
+        // ractangle 스펠링 확인하기!
+        rectangularColision({ rectangle1: player, rectangle2: enemy }) &&
+        player.isAttacking
+    ) {
+        // 콘솔 로그 열어보고 부딪히면 hit메세지가 계속 뜸.
+        // 정확히는 충돌 판정이 아니라 x값 기준으로만 판단하기에 넘어가도 계속 뜨는 것.
+        // 그래서 두번째 조건문으로 추가해야 함.
+        console.log("hit");
+        player.isAttacking = false;
+
+        // 공격시 health값 감소
+        enemy.health -= 20;
+        document.querySelector("#enemyHealth").style.width = enemy.health + "%";
+    }
+
+    if (rectangularColision({ rectangle1: enemy, rectangle2: player }) && enemy.isAttacking) {
+        console.log("enemy attack success");
+        enemy.isAttacking = false;
+
+        // 플레이어 health 값 감소
+        player.health -= 20;
+        document.querySelector("#playerHealth").style.width = player.health + "%";
+    }
+
+    if(enemy.health <= 0 || player.health <= 0)
+    {
+        determineWinner({player, enemy, timerID});
+    }
+
 }
 
-// 애니메이션 시작
 animate();
+// 애니메이트 사용
 
+// 키보드 눌렀을 때, 이벤트 발생
 window.addEventListener("keydown", (event) => {
+    // console.log(event);
     console.log(event.key);
+    // 키입력 로그 확인
 
-    switch(event.key)
-    {
-        case "d": player.velocity.x = 1; break;
-        case "a": player.velocity.x = -1; break;
+    switch (event.key) {
+        case "d":
+            keys.d.pressed = true;
+            player.lastKey = "d";
+            break;
+        case "a":
+            keys.a.pressed = true;
+            player.lastKey = "a";
+            break;
+        case "w":
+            player.velocity.y = -10;
+            break;
+        case " ":
+            player.attack();
+            break;
+
+        // 방향키도 추가
+        case "ArrowRight":
+            keys.ArrowRight.pressed = true;
+            enemy.lastKey = "ArrowRight";
+            break;
+        case "ArrowLeft":
+            keys.ArrowLeft.pressed = true;
+            enemy.lastKey = "ArrowLeft";
+            break;
+        case "ArrowUp":
+            enemy.velocity.y = -10;
+            break;
+        // 적 공격키 추가
+        case "ArrowDown":
+            enemy.attack();
+            break;
     }
-})
+});
 
+// 키보드 눌렀다 땠을 때, 이벤트 발생
 window.addEventListener("keyup", (event) => {
+    // console.log(event);
     console.log(event.key);
+    // 키입력 로그 확인
 
-    switch(event.key)
-    {
-        case "d": player.velocity.x = 0; break;
-        case "a": player.velocity.x = 0; break;
+    switch (event.key) {
+        case "d":
+            keys.d.pressed = false;
+            break;
+        // 왼쪽 추가
+        case "a":
+            keys.a.pressed = false;
+            break;
+
+        // w의 lastKey를 추가할 필요는 없다. 추가하면 점프하고 움직임이 안됨
+
+        // 방향키도 추가
+        case "ArrowRight":
+            keys.ArrowRight.pressed = false;
+            break;
+        case "ArrowLeft":
+            keys.ArrowLeft.pressed = false;
+            break;
     }
-})
+});
