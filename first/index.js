@@ -46,6 +46,25 @@ const player = new Fighter({
         x: 0,
         y: 0,
     },
+    imageSrc: "/first/img/1p/Idle.png",
+    framesMax: 8,
+    scale : 2.5,
+
+    offset : {
+        x : 215,
+        y : 157,
+    },
+
+    sprites: {
+        idle: {
+            imageSrc: "/first/img/1p/Idle.png",
+            framesMax: 8,
+        },
+        run: {
+            imageSrc: "/first/img/1p/Run.png",
+            framesMax: 8,
+        }
+    }
 });
 
 // 적 선언
@@ -63,6 +82,23 @@ const enemy = new Fighter({
         x: -50,
         y: 0,
     },
+    imageSrc: "/first/img/1p/Idle.png",
+    framesMax: 8,
+    scale : 2.5,
+    offset : {
+        x : 215,
+        y : 157,
+    },
+    sprites: {
+        idle: {
+            imageSrc: "/first/img/1p/Idle.png",
+            framesMax: 8,
+        },
+        run: {
+            imageSrc: "/first/img/1p/Run.png",
+            framesMax: 8,
+        }
+    }
 });
 
 // 콘솔을 열어 player의 위치 확인 가능
@@ -127,20 +163,22 @@ function animate() {
 
     // 이렇게 바꿔도 약간의 문제 발생, d를 누른 상태로 a를 누르면 왼쪽으로 가지만, a를 누른 상태로 d를 누르면 그대로임
     // 그래서 가장 마지막에 입력한 last key를 설정함
-
+    player.image = player.sprites.idle.image;
     // 개량한 if문
     if (keys.a.pressed && player.lastKey === "a") {
         player.velocity.x = -2;
     } else if (keys.d.pressed && player.lastKey === "d") {
+        player.image = player.sprites.run.image;
         player.velocity.x = 2;
     }
     // lastKey를 player.lastKey로 변경
     // this.lastKey를 추가했기 때문에 추가한 let lastKey는 삭제해도 된다.
-
+    enemy.image = enemy.sprites.idle.image;
     // 적의 방향키 lastKey를 추가
     if (keys.ArrowLeft.pressed && enemy.lastKey === "ArrowLeft") {
         enemy.velocity.x = -2;
     } else if (keys.ArrowRight.pressed && enemy.lastKey === "ArrowRight") {
+        enemy.image = enemy.sprites.run.image;
         enemy.velocity.x = 2;
     }
 

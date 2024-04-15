@@ -1,5 +1,5 @@
 class Sprite {
-    constructor({ position, imageSrc, scale = 1, framesMax = 1}) {
+    constructor({ position, imageSrc, scale = 1, framesMax = 1, offset = {x: 0, y: 0}}) {
         // velocity 추가하면서 중괄호로 묶는다. (편하게 관리하게 위해?)
         this.position = position;
 
@@ -16,6 +16,8 @@ class Sprite {
 
         this.framesElapsed = 0;
         this.framesHold = 5;
+        
+        this.offset = offset;
     }
 
     draw() {
@@ -27,8 +29,8 @@ class Sprite {
             this.image.width / this.framesMax, 
             this.image.height,
             // 이미지 자르는 영역 
-            this.position.x, 
-            this.position.y, 
+            this.position.x - this.offset.x, 
+            this.position.y - this.offset.y, 
             (this.image.width / this.framesMax) * this.scale, 
             this.image.height * this.scale);
     }
@@ -55,11 +57,11 @@ class Fighter extends Sprite {
         position, 
         velocity, 
         color = "red", 
-        offset,
         imageSrc, 
         scale = 1, 
-        framesMax = 1
-        
+        framesMax = 1,
+        offset = {x: 0, y: 0,},
+        sprites
     }) {
 
         super({
@@ -67,6 +69,7 @@ class Fighter extends Sprite {
             imageSrc,
             scale,
             framesMax,
+            offset,
         })
 
         // velocity 추가하면서 중괄호로 묶는다. (편하게 관리하게 위해?)
@@ -98,6 +101,14 @@ class Fighter extends Sprite {
         this.framesCurrent = 0;
         this.framesElapsed = 0;
         this.framesHold = 5;
+
+        this.sprites = sprites;
+
+        for(const sprite in sprites)
+        {
+            sprites[sprite].image = new Image();
+            sprites[sprite].image.src = sprites[sprite].imageSrc;
+        }
     }
 
     // draw() {
@@ -114,6 +125,19 @@ class Fighter extends Sprite {
 
     update() {
         this.draw();
+
+        this.framesElapsed++;
+        if(this.framesElapsed % this.framesHold === 0)
+        {
+            if(this.framesCurrent < this.framesMax - 1)
+            {
+                this.framesCurrent++;
+            }
+            else
+            {
+                this.framesCurrent = 0;
+            }
+        }
 
         // Box의 대소문자 확인!
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
