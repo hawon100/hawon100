@@ -166,6 +166,7 @@ function animate() {
     player.image = player.sprites.idle.image;
     // 개량한 if문
     if (keys.a.pressed && player.lastKey === "a") {
+        player.image = player.sprites.run.image;
         player.velocity.x = -2;
     } else if (keys.d.pressed && player.lastKey === "d") {
         player.image = player.sprites.run.image;
@@ -176,6 +177,7 @@ function animate() {
     enemy.image = enemy.sprites.idle.image;
     // 적의 방향키 lastKey를 추가
     if (keys.ArrowLeft.pressed && enemy.lastKey === "ArrowLeft") {
+        enemy.image = enemy.sprites.run.image;
         enemy.velocity.x = -2;
     } else if (keys.ArrowRight.pressed && enemy.lastKey === "ArrowRight") {
         enemy.image = enemy.sprites.run.image;
