@@ -17,6 +17,16 @@ const background = new Sprite({
     imageSrc: "/first/img/background.png",
 })
 
+const shop = new Sprite({
+    position: {
+        x: 600,
+        y: 128,
+    },
+    imageSrc: "/first/img/shop.png",
+    scale : 2.75,
+    framesMax : 6,
+})
+
 c.fillRect(0, 0, canvas.width, canvas.height);
 // 시작점과 끝점
 
@@ -103,6 +113,8 @@ function animate() {
     // 캔버스 새로 그리는게 위에 있는 이유, 새로 그리고 이미지를 업데이트해야 보임. 안그러면 아무것도 안보임
 
     background.update();
+    shop.update();
+
     player.update();
     enemy.update();
     // 실행 후 확인하면 아래로 쭉 그어지는 것을 볼 수 있다.
@@ -185,7 +197,7 @@ window.addEventListener("keydown", (event) => {
         case "w":
             player.velocity.y = -10;
             break;
-        case " ":
+        case "s":
             player.attack();
             break;
 
