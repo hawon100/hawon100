@@ -23,8 +23,8 @@ const shop = new Sprite({
         y: 128,
     },
     imageSrc: "/first/img/shop.png",
-    scale : 2.75,
-    framesMax : 6,
+    scale: 2.75,
+    framesMax: 6,
 })
 
 c.fillRect(0, 0, canvas.width, canvas.height);
@@ -48,11 +48,11 @@ const player = new Fighter({
     },
     imageSrc: "/first/img/1p/Idle.png",
     framesMax: 8,
-    scale : 2.5,
+    scale: 2.5,
 
-    offset : {
-        x : 215,
-        y : 157,
+    offset: {
+        x: 215,
+        y: 157,
     },
 
     sprites: {
@@ -63,6 +63,18 @@ const player = new Fighter({
         run: {
             imageSrc: "/first/img/1p/Run.png",
             framesMax: 8,
+        },
+        jump: {
+            imageSrc: "/first/img/1p/Jump.png",
+            framesMax: 2,
+        },
+        fall: {
+            imageSrc: "/first/img/1p/Fall.png",
+            framesMax: 2,
+        },
+        attack1: {
+            imageSrc: "/first/img/1p/Attack1.png",
+            framesMax: 6,
         }
     }
 });
@@ -82,21 +94,33 @@ const enemy = new Fighter({
         x: -50,
         y: 0,
     },
-    imageSrc: "/first/img/1p/Idle.png",
-    framesMax: 8,
-    scale : 2.5,
-    offset : {
-        x : 215,
-        y : 157,
+    imageSrc: "/first/img/2p/Idle.png",
+    framesMax: 4,
+    scale: 2.5,
+    offset: {
+        x: -330,
+        y: 167,
     },
     sprites: {
         idle: {
-            imageSrc: "/first/img/1p/Idle.png",
-            framesMax: 8,
+            imageSrc: "/first/img/2p/Idle.png",
+            framesMax: 4,
         },
         run: {
-            imageSrc: "/first/img/1p/Run.png",
+            imageSrc: "/first/img/2p/Run.png",
             framesMax: 8,
+        },
+        jump: {
+            imageSrc: "/first/img/2p/Jump.png",
+            framesMax: 2,
+        },
+        fall: {
+            imageSrc: "/first/img/2p/Fall.png",
+            framesMax: 2,
+        },
+        attack1: {
+            imageSrc: "/first/img/2p/Attack1.png",
+            framesMax: 4,
         }
     }
 });
@@ -130,8 +154,6 @@ const keys = {
     },
 };
 
-
-
 decreaseTimer();
 
 // 재귀함수?
@@ -163,25 +185,48 @@ function animate() {
 
     // 이렇게 바꿔도 약간의 문제 발생, d를 누른 상태로 a를 누르면 왼쪽으로 가지만, a를 누른 상태로 d를 누르면 그대로임
     // 그래서 가장 마지막에 입력한 last key를 설정함
-    player.image = player.sprites.idle.image;
+    //player.image = player.sprites.idle.image;
+
     // 개량한 if문
     if (keys.a.pressed && player.lastKey === "a") {
-        player.image = player.sprites.run.image;
+        //player.image = player.sprites.run.image;
         player.velocity.x = -2;
+        player.switchSprite('run');
     } else if (keys.d.pressed && player.lastKey === "d") {
-        player.image = player.sprites.run.image;
+        //player.image = player.sprites.run.image;
         player.velocity.x = 2;
+        player.switchSprite('run');
     }
+    else {
+        player.switchSprite('idle');
+    }
+
+    if (player.velocity.y < 0) {
+        player.switchSprite('jump');
+    }
+    else if (player.velocity.y > 0) {
+        player.switchSprite('fall');
+    }
+
     // lastKey를 player.lastKey로 변경
     // this.lastKey를 추가했기 때문에 추가한 let lastKey는 삭제해도 된다.
-    enemy.image = enemy.sprites.idle.image;
     // 적의 방향키 lastKey를 추가
     if (keys.ArrowLeft.pressed && enemy.lastKey === "ArrowLeft") {
-        enemy.image = enemy.sprites.run.image;
         enemy.velocity.x = -2;
+        enemy.switchSprite('run');
     } else if (keys.ArrowRight.pressed && enemy.lastKey === "ArrowRight") {
-        enemy.image = enemy.sprites.run.image;
         enemy.velocity.x = 2;
+        enemy.switchSprite('run');
+    }
+    else {
+        enemy.switchSprite('idle');
+    }
+
+    if (enemy.velocity.y < 0) {
+        enemy.switchSprite('jump');
+    }
+    else if (enemy.velocity.y > 0) {
+        enemy.switchSprite('fall');
     }
 
     if (
@@ -209,9 +254,8 @@ function animate() {
         document.querySelector("#playerHealth").style.width = player.health + "%";
     }
 
-    if(enemy.health <= 0 || player.health <= 0)
-    {
-        determineWinner({player, enemy, timerID});
+    if (enemy.health <= 0 || player.health <= 0) {
+        determineWinner({ player, enemy, timerID });
     }
 
 }

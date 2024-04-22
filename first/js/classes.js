@@ -1,5 +1,5 @@
 class Sprite {
-    constructor({ position, imageSrc, scale = 1, framesMax = 1, offset = {x: 0, y: 0}}) {
+    constructor({ position, imageSrc, scale = 1, framesMax = 1, offset = { x: 0, y: 0 } }) {
         // velocity 추가하면서 중괄호로 묶는다. (편하게 관리하게 위해?)
         this.position = position;
 
@@ -15,37 +15,34 @@ class Sprite {
         this.framesCurrent = 0;
 
         this.framesElapsed = 0;
-        this.framesHold = 5;
-        
+        this.framesHold = 10;
+
         this.offset = offset;
     }
 
     draw() {
         c.drawImage(
-            this.image, 
+            this.image,
             // 이미지 자르는 영역
-            this.framesCurrent * (this.image.width / this.framesMax), 
-            0, 
-            this.image.width / this.framesMax, 
+            this.framesCurrent * (this.image.width / this.framesMax),
+            0,
+            this.image.width / this.framesMax,
             this.image.height,
             // 이미지 자르는 영역 
-            this.position.x - this.offset.x, 
-            this.position.y - this.offset.y, 
-            (this.image.width / this.framesMax) * this.scale, 
+            this.position.x - this.offset.x,
+            this.position.y - this.offset.y,
+            (this.image.width / this.framesMax) * this.scale,
             this.image.height * this.scale);
     }
 
     update() {
         this.draw();
         this.framesElapsed++;
-        if(this.framesElapsed % this.framesHold === 0)
-        {
-            if(this.framesCurrent < this.framesMax - 1)
-            {
+        if (this.framesElapsed % this.framesHold === 0) {
+            if (this.framesCurrent < this.framesMax - 1) {
                 this.framesCurrent++;
             }
-            else
-            {
+            else {
                 this.framesCurrent = 0;
             }
         }
@@ -53,14 +50,14 @@ class Sprite {
 }
 
 class Fighter extends Sprite {
-    constructor({ 
-        position, 
-        velocity, 
-        color = "red", 
-        imageSrc, 
-        scale = 1, 
+    constructor({
+        position,
+        velocity,
+        color = "red",
+        imageSrc,
+        scale = 1,
         framesMax = 1,
-        offset = {x: 0, y: 0,},
+        offset = { x: 0, y: 0, },
         sprites
     }) {
 
@@ -100,12 +97,11 @@ class Fighter extends Sprite {
 
         this.framesCurrent = 0;
         this.framesElapsed = 0;
-        this.framesHold = 5;
+        this.framesHold = 10;
 
         this.sprites = sprites;
 
-        for(const sprite in sprites)
-        {
+        for (const sprite in sprites) {
             sprites[sprite].image = new Image();
             sprites[sprite].image.src = sprites[sprite].imageSrc;
         }
@@ -127,14 +123,11 @@ class Fighter extends Sprite {
         this.draw();
 
         this.framesElapsed++;
-        if(this.framesElapsed % this.framesHold === 0)
-        {
-            if(this.framesCurrent < this.framesMax - 1)
-            {
+        if (this.framesElapsed % this.framesHold === 0) {
+            if (this.framesCurrent < this.framesMax - 1) {
                 this.framesCurrent++;
             }
-            else
-            {
+            else {
                 this.framesCurrent = 0;
             }
         }
@@ -151,18 +144,64 @@ class Fighter extends Sprite {
 
         if (this.position.y + this.height + this.velocity.y >= canvas.height - 96) {
             this.velocity.y = 0;
+            this.position.y = 330;
             // this의 현재 위치와 this의 높이와 this의 속도가 canvas의 전체 높이보다 커지면 속도를 0으로 만든다.
         } else {
             this.velocity.y += gravity;
             // 중력 추가, else 때문에 더 이상 땅으로 들어가지 않는다.
         }
+        console.log(this.position.y);
+
     }
 
     attack() {
+        this.switchSprite('attack1');
         this.isAttacking = true;
         setTimeout(() => {
             this.isAttacking = false;
         }, 100);
         // 공격 딜레이 걸기
+    }
+
+    switchSprite(sprite) {
+        if(this.image === this.sprites.attack1.image && this.framesCurrent < this.sprites.attack1.framesMax - 1) return;
+        
+        switch (sprite) {
+            case 'idle':
+                if (this.image !== this.sprites.idle.image) {
+                    this.image = this.sprites.idle.image;
+                    this.framesMax = this.sprites.idle.framesMax;
+                    this.framesCurrent = 0;
+                }
+                break;
+            case 'run':
+                if (this.image !== this.sprites.run.image) {
+                    this.image = this.sprites.run.image;
+                    this.framesMax = this.sprites.run.framesMax;
+                    this.framesCurrent = 0;
+                }
+                break;
+            case 'jump':
+                if (this.image !== this.sprites.jump.image) {
+                    this.image = this.sprites.jump.image;
+                    this.framesMax = this.sprites.jump.framesMax;
+                    this.framesCurrent = 0;
+                }
+                break;
+            case 'fall':
+                if (this.image !== this.sprites.fall.image) {
+                    this.image = this.sprites.fall.image;
+                    this.framesMax = this.sprites.fall.framesMax;
+                    this.framesCurrent = 0;
+                }
+                break;
+            case 'attack1':
+                if (this.image !== this.sprites.attack1.image) {
+                    this.image = this.sprites.attack1.image;
+                    this.framesMax = this.sprites.attack1.framesMax;
+                    this.framesCurrent = 0;
+                }
+                break;
+        }
     }
 }
