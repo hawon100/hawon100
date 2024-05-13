@@ -35,8 +35,7 @@ class Sprite {
             this.image.height * this.scale);
     }
 
-    update() {
-        this.draw();
+    animateFrame() {
         this.framesElapsed++;
         if (this.framesElapsed % this.framesHold === 0) {
             if (this.framesCurrent < this.framesMax - 1) {
@@ -46,6 +45,11 @@ class Sprite {
                 this.framesCurrent = 0;
             }
         }
+    }
+
+    update() {
+        this.draw();
+        this.animateFrame();
     }
 }
 
@@ -58,7 +62,8 @@ class Fighter extends Sprite {
         scale = 1,
         framesMax = 1,
         offset = { x: 0, y: 0, },
-        sprites
+        sprites,
+        attackBox = { offset: {}, width: undefined, height: undefined }
     }) {
 
         super({
@@ -79,13 +84,13 @@ class Fighter extends Sprite {
         this.lastKey;
 
         this.attackBox = {
-            width: 100,
-            height: 50,
+            width: attackBox.width,
+            height: attackBox.height,
             position: {
                 x: this.position.x,
                 y: this.position.y,
             },
-            offset,
+            offset : attackBox.offset,
         };
 
         this.color = color;
@@ -119,9 +124,7 @@ class Fighter extends Sprite {
     //     }
     // }
 
-    update() {
-        this.draw();
-
+    animateFrame() {
         this.framesElapsed++;
         if (this.framesElapsed % this.framesHold === 0) {
             if (this.framesCurrent < this.framesMax - 1) {
@@ -131,10 +134,24 @@ class Fighter extends Sprite {
                 this.framesCurrent = 0;
             }
         }
+    }
+
+    update() {
+        this.draw();
+        this.animateFrame();
 
         // Box의 대소문자 확인!
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
-        this.attackBox.position.y = this.position.y;
+        this.attackBox.position.y = this.position.y + this.attackBox.offset.y;
+        console.log(this.attackBox.position.x)
+
+        // c.fillRect(
+        //     this.attackBox.position.x,
+        //     this.attackBox.position.y,
+        //     this.attackBox.width,
+        //     this.attackBox.height
+        // )
+
 
         this.position.y += this.velocity.y;
         // 값 변경하고 const player의 velocity안 값을 10으로 변경.
@@ -150,7 +167,6 @@ class Fighter extends Sprite {
             this.velocity.y += gravity;
             // 중력 추가, else 때문에 더 이상 땅으로 들어가지 않는다.
         }
-        console.log(this.position.y);
 
     }
 
@@ -164,8 +180,8 @@ class Fighter extends Sprite {
     }
 
     switchSprite(sprite) {
-        if(this.image === this.sprites.attack1.image && this.framesCurrent < this.sprites.attack1.framesMax - 1) return;
-        
+        if (this.image === this.sprites.attack1.image && this.framesCurrent < this.sprites.attack1.framesMax - 1) return;
+
         switch (sprite) {
             case 'idle':
                 if (this.image !== this.sprites.idle.image) {

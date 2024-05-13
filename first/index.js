@@ -76,6 +76,15 @@ const player = new Fighter({
             imageSrc: "/first/img/1p/Attack1.png",
             framesMax: 6,
         }
+    },
+    // attack offset setting
+    attackBox : {
+        offset: {
+            x : 100,
+            y : 50
+        },
+        width : 160,
+        height : 50,
     }
 });
 
@@ -98,7 +107,7 @@ const enemy = new Fighter({
     framesMax: 4,
     scale: 2.5,
     offset: {
-        x: -330,
+        x: 215,
         y: 167,
     },
     sprites: {
@@ -122,6 +131,14 @@ const enemy = new Fighter({
             imageSrc: "/first/img/2p/Attack1.png",
             framesMax: 4,
         }
+    },
+    attackBox : {
+        offset: {
+            x : -170,
+            y : 50
+        },
+        width : 170,
+        height : 50,
     }
 });
 
@@ -232,7 +249,7 @@ function animate() {
     if (
         // ractangle 스펠링 확인하기!
         rectangularColision({ rectangle1: player, rectangle2: enemy }) &&
-        player.isAttacking
+        player.isAttacking && player.framesCurrent === 4
     ) {
         // 콘솔 로그 열어보고 부딪히면 hit메세지가 계속 뜸.
         // 정확히는 충돌 판정이 아니라 x값 기준으로만 판단하기에 넘어가도 계속 뜨는 것.
@@ -245,13 +262,23 @@ function animate() {
         document.querySelector("#enemyHealth").style.width = enemy.health + "%";
     }
 
-    if (rectangularColision({ rectangle1: enemy, rectangle2: player }) && enemy.isAttacking) {
+    if(player.isAttacking && player.framesCurrent === 4)
+    {
+        player.isAttacking = false;
+    }
+
+    if (rectangularColision({ rectangle1: enemy, rectangle2: player }) && enemy.isAttacking && enemy.framesCurrent === 2) {
         console.log("enemy attack success");
         enemy.isAttacking = false;
 
         // 플레이어 health 값 감소
         player.health -= 20;
         document.querySelector("#playerHealth").style.width = player.health + "%";
+    }
+
+    if(enemy.isAttacking && player.framesCurrent === 4)
+    {
+        enemy.isAttacking = false;
     }
 
     if (enemy.health <= 0 || player.health <= 0) {
