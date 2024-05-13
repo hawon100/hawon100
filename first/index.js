@@ -75,6 +75,10 @@ const player = new Fighter({
         attack1: {
             imageSrc: "/first/img/1p/Attack1.png",
             framesMax: 6,
+        },
+        takeHit: {
+            imageSrc: "/first/img/1p/Takehit.png",
+            framesMax: 4,
         }
     },
     // attack offset setting
@@ -130,6 +134,10 @@ const enemy = new Fighter({
         attack1: {
             imageSrc: "/first/img/2p/Attack1.png",
             framesMax: 4,
+        },
+        takeHit: {
+            imageSrc: "/first/img/2p/Takehit.png",
+            framesMax: 3,
         }
     },
     attackBox : {
@@ -258,7 +266,7 @@ function animate() {
         player.isAttacking = false;
 
         // 공격시 health값 감소
-        enemy.health -= 20;
+        enemy.takeHit();
         document.querySelector("#enemyHealth").style.width = enemy.health + "%";
     }
 
@@ -272,7 +280,7 @@ function animate() {
         enemy.isAttacking = false;
 
         // 플레이어 health 값 감소
-        player.health -= 20;
+        player.takeHit();
         document.querySelector("#playerHealth").style.width = player.health + "%";
     }
 
