@@ -276,7 +276,7 @@ function animate() {
         document.querySelector("#playerHealth").style.width = player.health + "%";
     }
 
-    if(enemy.isAttacking && player.framesCurrent === 4)
+    if(enemy.isAttacking && enemy.framesCurrent === 2)
     {
         enemy.isAttacking = false;
     }
