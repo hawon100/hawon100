@@ -79,6 +79,10 @@ const player = new Fighter({
         takeHit: {
             imageSrc: "/first/img/1p/Takehit.png",
             framesMax: 4,
+        },
+        death: {
+            imageSrc: "/first/img/1p/Death.png",
+            framesMax: 6,
         }
     },
     // attack offset setting
@@ -138,6 +142,10 @@ const enemy = new Fighter({
         takeHit: {
             imageSrc: "/first/img/2p/Takehit.png",
             framesMax: 3,
+        },
+        death: {
+            imageSrc: "/first/img/2p/Death.png",
+            framesMax: 7,
         }
     },
     attackBox : {
@@ -304,38 +312,46 @@ window.addEventListener("keydown", (event) => {
     console.log(event.key);
     // 키입력 로그 확인
 
-    switch (event.key) {
-        case "d":
-            keys.d.pressed = true;
-            player.lastKey = "d";
-            break;
-        case "a":
-            keys.a.pressed = true;
-            player.lastKey = "a";
-            break;
-        case "w":
-            player.velocity.y = -10;
-            break;
-        case "s":
-            player.attack();
-            break;
-
-        // 방향키도 추가
-        case "ArrowRight":
-            keys.ArrowRight.pressed = true;
-            enemy.lastKey = "ArrowRight";
-            break;
-        case "ArrowLeft":
-            keys.ArrowLeft.pressed = true;
-            enemy.lastKey = "ArrowLeft";
-            break;
-        case "ArrowUp":
-            enemy.velocity.y = -10;
-            break;
-        // 적 공격키 추가
-        case "ArrowDown":
-            enemy.attack();
-            break;
+    if(!player.dead)
+    {
+        switch (event.key) {
+            case "d":
+                keys.d.pressed = true;
+                player.lastKey = "d";
+                break;
+            case "a":
+                keys.a.pressed = true;
+                player.lastKey = "a";
+                break;
+            case "w":
+                player.velocity.y = -10;
+                break;
+            case "s":
+                player.attack();
+                break;
+        }
+    }
+   
+    if(!enemy.dead)
+    {
+        switch (event.key) {
+            // 방향키도 추가
+            case "ArrowRight":
+                keys.ArrowRight.pressed = true;
+                enemy.lastKey = "ArrowRight";
+                break;
+            case "ArrowLeft":
+                keys.ArrowLeft.pressed = true;
+                enemy.lastKey = "ArrowLeft";
+                break;
+            case "ArrowUp":
+                enemy.velocity.y = -10;
+                break;
+            // 적 공격키 추가
+            case "ArrowDown":
+                enemy.attack();
+                break;
+        }
     }
 });
 
