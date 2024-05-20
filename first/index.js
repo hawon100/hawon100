@@ -206,6 +206,9 @@ function animate() {
     background.update();
     shop.update();
 
+    c.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    c.fillRect(0, 0, canvas.width, canvas.height);
+    
     player.update();
     enemy.update();
     // 실행 후 확인하면 아래로 쭉 그어지는 것을 볼 수 있다.
@@ -275,7 +278,11 @@ function animate() {
 
         // 공격시 health값 감소
         enemy.takeHit();
-        document.querySelector("#enemyHealth").style.width = enemy.health + "%";
+        //document.querySelector("#enemyHealth").style.width = enemy.health + "%";
+
+        gsap.to("#enemyHealth", {
+            width: enemy.health + "%"
+        })
     }
 
     if(player.isAttacking && player.framesCurrent === 4)
@@ -289,7 +296,10 @@ function animate() {
 
         // 플레이어 health 값 감소
         player.takeHit();
-        document.querySelector("#playerHealth").style.width = player.health + "%";
+        //document.querySelector("#playerHealth").style.width = player.health + "%";
+        gsap.to("#playerHealth", {
+            width: player.health + "%"
+        })
     }
 
     if(enemy.isAttacking && enemy.framesCurrent === 2)

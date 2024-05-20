@@ -13,7 +13,7 @@ function determineWinner({ player, enemy, timerID }) {
     document.querySelector("#displayText").style.display = "flex";
 
     if (player.health === enemy.health) {
-        document.querySelector("#displayText").innerHTML = "무승부";
+        document.querySelector("#displayText").innerHTML = "draw";
     }
     else if (player.health > enemy.health) {
         document.querySelector("#displayText").innerHTML = "1p Win!";
